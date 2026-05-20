@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 Detective Spelling Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0d1a;
+      --surface:   #141428;
+      --card:      #1c1c35;
+      --border:    #2a2a4a;
+      --gold:      #ffd166;
+      --amber:     #ff9f43;
+      --teal:      #06d6a0;
+      --red:       #ef476f;
+      --text:      #e8e8f8;
+      --muted:     #7070a0;
+      --radius:    16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,209,102,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 90% 90%, rgba(6,214,160,0.04) 0%, transparent 50%);
+    }
+
+    .screen { display: none; width: 100%; max-width: 660px; }
+    .screen.active { display: flex; flex-direction: column; align-items: center; gap: 24px; animation: fadeUp 0.35s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── LOGO ── */
+    .logo {
+      text-align: center;
+      padding-top: 12px;
+    }
+    .logo-icon { font-size: 3.5rem; display: block; margin-bottom: 6px; }
+    .logo h1 {
+      font-family: 'Special Elite', serif;
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+    }
+    .logo p { color: var(--muted); font-size: 0.95rem; margin-top: 6px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+    }
+    .card-title {
+      font-family: 'Special Elite', serif;
+      font-size: 1.05rem;
+      color: var(--gold);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── MODE SELECTOR ── */
+    .modes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+    }
+    .mode-btn {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+    .mode-btn:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .mode-btn.selected { border-color: var(--gold); background: rgba(255,209,102,0.1); }
+    .mode-btn .mode-icon { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+    .mode-btn .mode-name { font-weight: 800; font-size: 0.95rem; display: block; }
+    .mode-btn .mode-detail { font-size: 0.75rem; color: var(--muted); margin-top: 4px; display: block; }
+
+    /* ── CUSTOM SETTINGS ── */
+    .setting-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .setting-row:last-child { margin-bottom: 0; }
+    .setting-label { font-weight: 700; font-size: 0.9rem; color: var(--muted); }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 30px;
+      padding: 6px 16px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 700;
+      transition: all 0.15s;
+      color: var(--text);
+    }
+    .chip:hover { border-color: var(--amber); }
+    .chip.selected { background: rgba(255,159,67,0.15); border-color: var(--amber); color: var(--amber); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 32px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.18s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold), var(--amber));
+      color: #1a1000;
+      width: 100%;
+      font-size: 1.1rem;
+      padding: 16px 32px;
+      box-shadow: 0 4px 20px rgba(255,209,102,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(255,209,102,0.4); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text);
+      padding: 10px 24px;
+    }
+    .btn-outline:hover { border-color: var(--muted); }
+    .btn-teal {
+      background: linear-gradient(135deg, var(--teal), #0ab984);
+      color: #001a14;
+      box-shadow: 0 4px 16px rgba(6,214,160,0.3);
+    }
+    .btn-teal:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(6,214,160,0.4); }
+    .btn-teal:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap { width: 100%; }
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .progress-label { font-size: 0.85rem; color: var(--muted); font-weight: 700; }
+    .progress-count { font-size: 0.85rem; color: var(--gold); font-weight: 800; }
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--amber));
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── SPELLING SCREEN ── */
+    .timer-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .timer-ring-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+    .timer-ring-wrap svg { width: 120px; height: 120px; }
+    #timer-number {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--gold);
+    }
+    #timer-number.urgent { color: var(--red); animation: pulse 0.5s ease infinite alternate; }
+    @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.12); } }
+
+    .word-number-badge {
+      background: rgba(255,209,102,0.12);
+      border: 1px solid rgba(255,209,102,0.3);
+      border-radius: 30px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .listen-btn {
+      background: linear-gradient(135deg, #1e1e40, #2a2a50);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 20px 32px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      width: 100%;
+      color: var(--text);
+    }
+    .listen-btn:hover:not(:disabled) { border-color: var(--gold); transform: scale(1.02); }
+    .listen-btn:active:not(:disabled) { transform: scale(0.98); }
+    .listen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .listen-btn.playing { border-color: var(--amber); background: rgba(255,159,67,0.1); animation: glow 1.2s ease infinite alternate; }
+    @keyframes glow {
+      from { box-shadow: 0 0 10px rgba(255,159,67,0.2); }
+      to   { box-shadow: 0 0 24px rgba(255,159,67,0.5); }
+    }
+    .listen-icon { font-size: 2.2rem; }
+    .listen-label { font-weight: 800; font-size: 1rem; }
+    .listen-replays { font-size: 0.78rem; color: var(--muted); }
+
+    .spell-input {
+      width: 100%;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      letter-spacing: 0.1em;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .spell-input:focus { border-color: var(--gold); }
+    .spell-input.correct { border-color: var(--teal); background: rgba(6,214,160,0.06); }
+    .spell-input.wrong { border-color: var(--red); background: rgba(239,71,111,0.06); }
+
+    .feedback-bubble {
+      border-radius: 14px;
+      padding: 16px 20px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      display: none;
+      width: 100%;
+    }
+    .feedback-bubble.correct { background: rgba(6,214,160,0.12); border: 1px solid rgba(6,214,160,0.3); color: var(--teal); }
+    .feedback-bubble.wrong { background: rgba(239,71,111,0.12); border: 1px solid rgba(239,71,111,0.3); color: var(--red); }
+    .feedback-bubble .correct-word { font-size: 1.2rem; margin-top: 4px; display: block; }
+
+    /* ── RESULTS ── */
+    .score-circle {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 5px solid var(--gold);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(255,209,102,0.25);
+    }
+    .score-big { font-size: 2.2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .score-sub { font-size: 0.75rem; color: var(--muted); font-weight: 700; }
+
+    .result-list { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+    .result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .result-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .result-word { font-weight: 800; flex: 1; }
+    .result-answer { font-size: 0.85rem; color: var(--muted); }
+    .result-item.r-correct { border-color: rgba(6,214,160,0.3); }
+    .result-item.r-wrong { border-color: rgba(239,71,111,0.2); }
+    .result-item.r-partial { border-color: rgba(255,159,67,0.3); }
+
+    /* ── DEFINITION SCREEN ── */
+    .word-display {
+      text-align: center;
+      padding: 28px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+    }
+    .word-display .the-word {
+      font-family: 'Special Elite', serif;
+      font-size: clamp(2rem, 8vw, 3.2rem);
+      color: var(--gold);
+      letter-spacing: 0.08em;
+    }
+    .word-display .hint { font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+
+    .def-textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      resize: vertical;
+      min-height: 100px;
+      outline: none;
+      transition: border-color 0.2s;
+      line-height: 1.5;
+    }
+    .def-textarea:focus { border-color: var(--amber); }
+    .def-textarea:disabled { opacity: 0.5; }
+
+    .ai-grading {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: rgba(255,159,67,0.07);
+      border: 1px solid rgba(255,159,67,0.2);
+      border-radius: 12px;
+      width: 100%;
+    }
+    .ai-grading.visible { display: flex; }
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255,159,67,0.2);
+      border-top-color: var(--amber);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .ai-grading-text { font-size: 0.9rem; color: var(--amber); font-weight: 700; }
+
+    .def-feedback {
+      display: none;
+      padding: 16px 20px;
+      border-radius: 12px;
+      width: 100%;
+      gap: 10px;
+    }
+    .def-feedback.visible { display: flex; flex-direction: column; }
+    .def-feedback.correct { background: rgba(6,214,160,0.1); border: 1px solid rgba(6,214,160,0.3); }
+    .def-feedback.partial { background: rgba(255,159,67,0.1); border: 1px solid rgba(255,159,67,0.3); }
+    .def-feedback.wrong { background: rgba(239,71,111,0.1); border: 1px solid rgba(239,71,111,0.3); }
+    .def-feedback-top { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1rem; }
+    .def-feedback.correct .def-feedback-top { color: var(--teal); }
+    .def-feedback.partial .def-feedback-top { color: var(--amber); }
+    .def-feedback.wrong .def-feedback-top { color: var(--red); }
+    .def-feedback-msg { font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+    .def-feedback-correct { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+
+    /* ── FINAL SCREEN ── */
+    .final-scores {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+    }
+    .final-score-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      text-align: center;
+    }
+    .final-score-card .score-label { font-size: 0.8rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .final-score-card .score-value { font-size: 2rem; font-weight: 900; color: var(--gold); }
+    .final-score-card .score-max { font-size: 1rem; color: var(--muted); font-weight: 700; }
+
+    .stars { font-size: 2.5rem; letter-spacing: 4px; }
+    .finish-message {
+      text-align: center;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .finish-message strong { color: var(--text); }
+
+    /* ── MISC ── */
+    .section-header {
+      text-align: center;
+      font-family: 'Special Elite', serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+    }
+    .tape {
+      background: rgba(255,209,102,0.12);
+      border-top: 2px dashed rgba(255,209,102,0.25);
+      border-bottom: 2px dashed rgba(255,209,102,0.25);
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      width: 100%;
+      text-align: center;
+    }
+
+    @media (max-width: 400px) {
+      .modes { grid-template-columns: 1fr; }
+      .final-scores { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 1 — SETUP
+═══════════════════════════════════════════ -->
+<div id="screen-setup" class="screen active">
+  <div class="logo">
+    <span class="logo-icon">🔍</span>
+    <h1>Detective Spelling<br>Academy</h1>
+    <p>Term 3 — Mystery & Crime Words</p>
+  </div>
+
+  <div class="tape">📁 Case File: 12 Suspects to Spell</div>
+
+  <div class="card">
+    <div class="card-title">⚡ Choose Your Mode</div>
+    <div class="modes">
+      <button class="mode-btn selected" data-mode="quick" onclick="selectMode('quick', this)">
+        <span class="mode-icon">⚡</span>
+        <span class="mode-name">Quick Fire</span>
+        <span class="mode-detail">10s · 2 replays</span>
+      </button>
+      <button class="mode-btn" data-mode="standard" onclick="selectMode('standard', this)">
+        <span class="mode-icon">🎯</span>
+        <span class="mode-name">Standard</span>
+        <span class="mode-detail">30s · 3 replays</span>
+      </button>
+      <button class="mode-btn" data-mode="relaxed" onclick="selectMode('relaxed', this)">
+        <span class="mode-icon">😌</span>
+        <span class="mode-name">Relaxed</span>
+        <span class="mode-detail">60s · unlimited</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card" id="custom-card">
+    <div class="card-title">🛠 Custom Settings</div>
+    <div class="setting-row">
+      <div class="setting-label">⏱ Time per word</div>
+      <div class="chips" id="time-chips">
+        <button class="chip" onclick="setTime(10, this)">10s</button>
+        <button class="chip selected" onclick="setTime(30, this)">30s</button>
+        <button class="chip" onclick="setTime(60, this)">60s</button>
+        <button class="chip" onclick="setTime(0, this)">No limit</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">🔊 Max replays</div>
+      <div class="chips" id="replay-chips">
+        <button class="chip" onclick="setReplays(1, this)">1×</button>
+        <button class="chip" onclick="setReplays(2, this)">2×</button>
+        <button class="chip selected" onclick="setReplays(3, this)">3×</button>
+        <button class="chip" onclick="setReplays(99, this)">∞</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="startSpelling()">
+    🔎 Begin Spelling Test
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 2 — SPELLING TEST
+═══════════════════════════════════════════ -->
+<div id="screen-spelling" class="screen">
+  <div class="logo" style="padding-top:0">
+    <span style="font-family:'Special Elite',serif;color:var(--gold);font-size:1.2rem">🔍 Spelling Round</span>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span class="progress-label">Evidence Collected</span>
+      <span class="progress-count" id="sp-progress-count">1 / 12</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="sp-progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="timer-zone">
+    <div class="timer-ring-wrap" id="timer-wrap">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="#2a2a4a" stroke-width="8"/>
+        <circle id="timer-ring" cx="60" cy="60" r="52" fill="none"
+          stroke="url(#timerGrad)" stroke-width="8"
+          stroke-dasharray="327" stroke-dashoffset="0"
+          transform="rotate(-90 60 60)" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ffd166"/>
+            <stop offset="100%" stop-color="#ff9f43"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div id="timer-number">30</div>
+    </div>
+    <div class="word-number-badge" id="word-badge">Word 1 of 12</div>
+  </div>
+
+  <button class="listen-btn" id="listen-btn" onclick="handleListen()">
+    <span class="listen-icon" id="listen-icon">🔊</span>
+    <span class="listen-label" id="listen-label">Press to Hear the Word</span>
+    <span class="listen-replays" id="listen-replays"></span>
+  </button>
+
+  <input
+    class="spell-input"
+    id="spell-input"
+    type="text"
+    placeholder="Type the word here..."
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+    onkeydown="handleSpellKey(event)"
+  />
+
+  <div class="feedback-bubble" id="spell-feedback"></div>
+
+  <button class="btn btn-primary" id="sp-check-btn" onclick="checkSpelling()" style="max-width:320px">
+    ✅ Check Answer
+  </button>
+  <button class="btn btn-outline" id="sp-next-btn" onclick="nextSpellingWord()" style="display:none">
+    Next Word →
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 3 — SPELLING RESULTS
+═══════════════════════════════════════════ -->
+<div id="screen-spelling-results" class="screen">
+  <div class="logo" style="padding-top:0">
+    <span style="font-family:'Special Elite',serif;color:var(--gold);font-size:1.2rem">📋 Spelling Results</span>
+  </div>
+
+  <div class="score-circle" id="sp-score-circle">
+    <span class="score-big" id="sp-score-num">0</span>
+    <span class="score-sub">CORRECT</span>
+  </div>
+
+  <div class="result-list" id="sp-result-list"></div>
+
+  <button class="btn btn-primary" onclick="startDefinitions()">
+    📖 Next: Definition Round
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 4 — DEFINITION ROUND
+═══════════════════════════════════════════ -->
+<div id="screen-definitions" class="screen">
+  <div class="logo" style="padding-top:0">
+    <span style="font-family:'Special Elite',serif;color:var(--gold);font-size:1.2rem">📖 Definition Round</span>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span class="progress-label">Definitions Filed</span>
+      <span class="progress-count" id="def-progress-count">1 / 12</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="def-progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="word-display">
+    <div class="the-word" id="def-word">Investigation</div>
+    <div class="hint">What does this word mean? Write it in your own words.</div>
+  </div>
+
+  <textarea
+    class="def-textarea"
+    id="def-textarea"
+    placeholder="Type your definition here..."
+    onkeydown="handleDefKey(event)"
+  ></textarea>
+
+  <div class="ai-grading" id="ai-grading">
+    <div class="spinner"></div>
+    <span class="ai-grading-text">🤖 Detective AI is checking your answer...</span>
+  </div>
+
+  <div class="def-feedback" id="def-feedback">
+    <div class="def-feedback-top" id="def-feedback-top"></div>
+    <div class="def-feedback-msg" id="def-feedback-msg"></div>
+    <div class="def-feedback-correct" id="def-feedback-correct"></div>
+  </div>
+
+  <button class="btn btn-teal" id="def-submit-btn" onclick="submitDefinition()">
+    🤖 Submit for AI Grading
+  </button>
+  <button class="btn btn-outline" id="def-next-btn" onclick="nextDefinition()" style="display:none">
+    Next Word →
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 5 — FINAL RESULTS
+═══════════════════════════════════════════ -->
+<div id="screen-final" class="screen">
+  <div class="logo" style="padding-top:0">
+    <span class="logo-icon" id="final-emoji">🏆</span>
+    <h1 style="font-family:'Special Elite',serif;color:var(--gold);font-size:1.8rem">Case Closed!</h1>
+  </div>
+
+  <div class="stars" id="final-stars">⭐⭐⭐</div>
+
+  <div class="final-scores">
+    <div class="final-score-card">
+      <div class="score-label">🔤 Spelling</div>
+      <div><span class="score-value" id="final-sp-score">0</span><span class="score-max">/12</span></div>
+    </div>
+    <div class="final-score-card">
+      <div class="score-label">📖 Definitions</div>
+      <div><span class="score-value" id="final-def-score">0</span><span class="score-max">/12</span></div>
+    </div>
+  </div>
+
+  <div class="finish-message" id="finish-message"></div>
+
+  <div class="card">
+    <div class="card-title">📋 Full Breakdown</div>
+    <div class="result-list" id="final-breakdown"></div>
+  </div>
+
+  <button class="btn btn-primary" onclick="restartApp()">
+    🔄 Try Again
+  </button>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  WORD DATA
+// ─────────────────────────────────────────────
+const WORDS = [
+  { word: "Investigation", definition: "A careful search to find out the truth" },
+  { word: "Evidence",      definition: "Proof that helps solve a case" },
+  { word: "Suspicious",    definition: "Something that seems strange or not right" },
+  { word: "Detective",     definition: "A person who solves crimes" },
+  { word: "Alibi",         definition: "Proof someone was elsewhere during a crime" },
+  { word: "Motive",        definition: "The reason someone did something" },
+  { word: "Witness",       definition: "A person who saw something happen" },
+  { word: "Clue",          definition: "A small piece of information that helps solve a mystery" },
+  { word: "Suspect",       definition: "A person who might have done the crime" },
+  { word: "Crime",         definition: "An illegal act or action" },
+  { word: "Interrogate",   definition: "To ask someone many questions" },
+  { word: "Mystery",       definition: "Something that is not yet explained" }
+];
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+const state = {
+  settings: { time: 30, maxReplays: 3 },
+  wordIndex: 0,
+  replaysUsed: 0,
+  timeLeft: 30,
+  totalTime: 30,
+  timerInterval: null,
+  wordLocked: false,
+  spellingResults: [],   // { word, userAnswer, correct }
+  defResults: [],        // { word, userAnswer, score, feedback, correctDef }
+  defSubmitted: false
+};
+
+// ─────────────────────────────────────────────
+//  SCREEN NAV
+// ─────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────────────────────────
+//  SETUP SCREEN
+// ─────────────────────────────────────────────
+const PRESETS = {
+  quick:    { time: 10,  maxReplays: 2 },
+  standard: { time: 30,  maxReplays: 3 },
+  relaxed:  { time: 60,  maxReplays: 99 }
+};
+
+function selectMode(mode, btn) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const p = PRESETS[mode];
+  state.settings = { ...p };
+  syncChips();
+}
+
+function setTime(t, btn) {
+  document.querySelectorAll('#time-chips .chip').forEach(c => c.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.settings.time = t;
+  deselectModes();
+}
+
+function setReplays(r, btn) {
+  document.querySelectorAll('#replay-chips .chip').forEach(c => c.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.settings.maxReplays = r;
+  deselectModes();
+}
+
+function deselectModes() {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
+}
+
+function syncChips() {
+  const { time, maxReplays } = state.settings;
+  document.querySelectorAll('#time-chips .chip').forEach(c => {
+    const v = c.textContent === 'No limit' ? 0 : parseInt(c.textContent);
+    c.classList.toggle('selected', v === time);
+  });
+  const rMap = { '1×':1, '2×':2, '3×':3, '∞':99 };
+  document.querySelectorAll('#replay-chips .chip').forEach(c => {
+    c.classList.toggle('selected', rMap[c.textContent] === maxReplays);
+  });
+}
+
+function startSpelling() {
+  state.wordIndex = 0;
+  state.spellingResults = [];
+  state.replaysUsed = 0;
+  state.wordLocked = false;
+  showScreen('screen-spelling');
+  loadSpellingWord();
+}
+
+// ─────────────────────────────────────────────
+//  TTS
+// ─────────────────────────────────────────────
+function speak(text, onEnd) {
+  if (!window.speechSynthesis) return onEnd && onEnd();
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.82;
+  u.pitch = 1.0;
+  u.volume = 1.0;
+  if (onEnd) u.onend = onEnd;
+  speechSynthesis.speak(u);
+}
+
+// ─────────────────────────────────────────────
+//  TIMER
+// ─────────────────────────────────────────────
+const CIRCUMFERENCE = 327; // 2 * π * 52
+
+function startTimer() {
+  clearInterval(state.timerInterval);
+  const wrap = document.getElementById('timer-wrap');
+  const noLimit = state.settings.time === 0;
+
+  if (noLimit) {
+    wrap.style.display = 'none';
+    return;
+  }
+
+  wrap.style.display = 'flex';
+  state.timeLeft = state.settings.time;
+  state.totalTime = state.settings.time;
+  updateTimerDisplay();
+
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      if (!state.wordLocked) handleTimeUp();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(state.timerInterval);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-number');
+  const ring = document.getElementById('timer-ring');
+  const t = state.timeLeft;
+  const total = state.totalTime;
+
+  el.textContent = t;
+  el.classList.toggle('urgent', t <= 5 && t > 0);
+
+  const offset = CIRCUMFERENCE * (1 - t / total);
+  ring.style.strokeDashoffset = offset;
+  ring.style.stroke = t <= 5 ? '#ef476f' : 'url(#timerGrad)';
+}
+
+function handleTimeUp() {
+  if (state.wordLocked) return;
+  checkSpelling(true);
+}
+
+// ─────────────────────────────────────────────
+//  SPELLING WORD LOGIC
+// ─────────────────────────────────────────────
+function loadSpellingWord() {
+  const idx = state.wordIndex;
+  const total = WORDS.length;
+  state.replaysUsed = 0;
+  state.wordLocked = false;
+
+  // Progress
+  document.getElementById('sp-progress-count').textContent = `${idx + 1} / ${total}`;
+  document.getElementById('sp-progress-fill').style.width = `${(idx / total) * 100}%`;
+  document.getElementById('word-badge').textContent = `Word ${idx + 1} of ${total}`;
+
+  // Reset UI
+  const input = document.getElementById('spell-input');
+  input.value = '';
+  input.className = 'spell-input';
+  input.disabled = false;
+  input.focus();
+
+  const fb = document.getElementById('spell-feedback');
+  fb.style.display = 'none';
+  fb.className = 'feedback-bubble';
+
+  document.getElementById('sp-check-btn').style.display = '';
+  document.getElementById('sp-next-btn').style.display = 'none';
+
+  updateListenBtn();
+  startTimer();
+}
+
+function updateListenBtn() {
+  const btn = document.getElementById('listen-btn');
+  const icon = document.getElementById('listen-icon');
+  const label = document.getElementById('listen-label');
+  const replaysEl = document.getElementById('listen-replays');
+  const { maxReplays } = state.settings;
+  const used = state.replaysUsed;
+  const unlimited = maxReplays >= 99;
+  const remaining = maxReplays - used;
+
+  btn.disabled = !unlimited && remaining <= 0;
+  btn.classList.remove('playing');
+  icon.textContent = '🔊';
+  label.textContent = used === 0 ? 'Press to Hear the Word' : 'Hear Again';
+  replaysEl.textContent = unlimited ? '' : `${remaining} play${remaining !== 1 ? 's' : ''} remaining`;
+}
+
+function handleListen() {
+  const { maxReplays } = state.settings;
+  const unlimited = maxReplays >= 99;
+  if (!unlimited && state.replaysUsed >= maxReplays) return;
+  if (state.wordLocked) return;
+
+  state.replaysUsed++;
+  const btn = document.getElementById('listen-btn');
+  const icon = document.getElementById('listen-icon');
+  btn.classList.add('playing');
+  icon.textContent = '📢';
+
+  const word = WORDS[state.wordIndex].word;
+  speak(word, () => {
+    btn.classList.remove('playing');
+    icon.textContent = '🔊';
+    updateListenBtn();
+  });
+  updateListenBtn();
+}
+
+function handleSpellKey(e) {
+  if (e.key === 'Enter') checkSpelling();
+}
+
+function checkSpelling(timedOut = false) {
+  if (state.wordLocked) return;
+  state.wordLocked = true;
+  stopTimer();
+
+  const input = document.getElementById('spell-input');
+  const userAnswer = timedOut ? (input.value || '') : input.value;
+  const correctWord = WORDS[state.wordIndex].word;
+  const correct = userAnswer.trim().toLowerCase() === correctWord.toLowerCase();
+
+  state.spellingResults.push({ word: correctWord, userAnswer, correct });
+
+  input.disabled = true;
+  input.className = 'spell-input ' + (correct ? 'correct' : 'wrong');
+
+  const fb = document.getElementById('spell-feedback');
+  fb.style.display = 'block';
+  if (correct) {
+    fb.className = 'feedback-bubble correct';
+    fb.innerHTML = `✅ Correct! Well done, Detective!`;
+  } else {
+    fb.className = 'feedback-bubble wrong';
+    fb.innerHTML = `❌ Not quite!<span class="correct-word">✏️ The correct spelling is: <strong>${correctWord}</strong></span>`;
+  }
+
+  document.getElementById('sp-check-btn').style.display = 'none';
+  document.getElementById('sp-next-btn').style.display = '';
+}
+
+function nextSpellingWord() {
+  state.wordIndex++;
+  if (state.wordIndex >= WORDS.length) {
+    showSpellingResults();
+  } else {
+    loadSpellingWord();
+  }
+}
+
+// ─────────────────────────────────────────────
+//  SPELLING RESULTS
+// ─────────────────────────────────────────────
+function showSpellingResults() {
+  stopTimer();
+  const correct = state.spellingResults.filter(r => r.correct).length;
+  document.getElementById('sp-score-num').textContent = correct;
+
+  // Colour score circle
+  const circle = document.getElementById('sp-score-circle');
+  const pct = correct / WORDS.length;
+  circle.style.borderColor = pct >= 0.8 ? 'var(--teal)' : pct >= 0.5 ? 'var(--amber)' : 'var(--red)';
+  circle.style.boxShadow = `0 0 30px ${pct >= 0.8 ? 'rgba(6,214,160,0.25)' : 'rgba(255,209,102,0.2)'}`;
+
+  const list = document.getElementById('sp-result-list');
+  list.innerHTML = '';
+  state.spellingResults.forEach(r => {
+    const div = document.createElement('div');
+    div.className = `result-item ${r.correct ? 'r-correct' : 'r-wrong'}`;
+    div.innerHTML = `
+      <span class="result-icon">${r.correct ? '✅' : '❌'}</span>
+      <span class="result-word">${r.word}</span>
+      ${!r.correct ? `<span class="result-answer">You wrote: <em>${r.userAnswer || '(blank)'}</em></span>` : ''}
+    `;
+    list.appendChild(div);
+  });
+
+  showScreen('screen-spelling-results');
+}
+
+// ─────────────────────────────────────────────
+//  DEFINITIONS ROUND
+// ─────────────────────────────────────────────
+function startDefinitions() {
+  state.wordIndex = 0;
+  state.defResults = [];
+  showScreen('screen-definitions');
+  loadDefinitionWord();
+}
+
+function loadDefinitionWord() {
+  const idx = state.wordIndex;
+  const total = WORDS.length;
+
+  document.getElementById('def-progress-count').textContent = `${idx + 1} / ${total}`;
+  document.getElementById('def-progress-fill').style.width = `${(idx / total) * 100}%`;
+  document.getElementById('def-word').textContent = WORDS[idx].word;
+
+  const ta = document.getElementById('def-textarea');
+  ta.value = '';
+  ta.disabled = false;
+  ta.focus();
+
+  document.getElementById('ai-grading').classList.remove('visible');
+  document.getElementById('def-feedback').className = 'def-feedback';
+  document.getElementById('def-submit-btn').style.display = '';
+  document.getElementById('def-next-btn').style.display = 'none';
+
+  state.defSubmitted = false;
+}
+
+function handleDefKey(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submitDefinition();
+}
+
+async function submitDefinition() {
+  if (state.defSubmitted) return;
+  state.defSubmitted = true;
+
+  const ta = document.getElementById('def-textarea');
+  const userAnswer = ta.value.trim();
+  const { word, definition: correctDef } = WORDS[state.wordIndex];
+
+  ta.disabled = true;
+  document.getElementById('def-submit-btn').style.display = 'none';
+  document.getElementById('ai-grading').classList.add('visible');
+
+  let result;
+  try {
+    const res = await fetch('/api/grade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ word, correctDef, userAnswer })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    result = await res.json();
+  } catch (err) {
+    // Fallback: simple local check
+    console.error('Grade API error:', err);
+    const simple = userAnswer.toLowerCase().includes(word.toLowerCase().slice(0,4))
+                || correctDef.split(' ').filter(w => w.length > 3).some(w => userAnswer.toLowerCase().includes(w.toLowerCase()));
+    result = {
+      score: simple ? 0.5 : 0,
+      correct: false,
+      partial: simple,
+      feedback: simple ? 'Good effort, you had the right idea!' : "Keep practising this one!"
+    };
+  }
+
+  document.getElementById('ai-grading').classList.remove('visible');
+  showDefFeedback(result, correctDef);
+
+  state.defResults.push({ word, userAnswer, score: result.score, feedback: result.feedback, correctDef });
+  document.getElementById('def-next-btn').style.display = '';
+}
+
+function showDefFeedback(result, correctDef) {
+  const fb = document.getElementById('def-feedback');
+  const top = document.getElementById('def-feedback-top');
+  const msg = document.getElementById('def-feedback-msg');
+  const cor = document.getElementById('def-feedback-correct');
+
+  let cls, icon, heading;
+  if (result.score >= 1) {
+    cls = 'correct'; icon = '✅'; heading = 'Correct!';
+  } else if (result.score > 0) {
+    cls = 'partial'; icon = '🟡'; heading = 'Partially Correct';
+  } else {
+    cls = 'wrong'; icon = '❌'; heading = 'Not Quite';
+  }
+
+  fb.className = `def-feedback visible ${cls}`;
+  top.innerHTML = `<span>${icon}</span> ${heading}`;
+  msg.textContent = result.feedback || '';
+  cor.textContent = result.score < 1 ? `📖 Definition: "${correctDef}"` : '';
+}
+
+function nextDefinition() {
+  state.wordIndex++;
+  if (state.wordIndex >= WORDS.length) {
+    showFinalResults();
+  } else {
+    loadDefinitionWord();
+  }
+}
+
+// ─────────────────────────────────────────────
+//  FINAL RESULTS
+// ─────────────────────────────────────────────
+function showFinalResults() {
+  const spScore = state.spellingResults.filter(r => r.correct).length;
+  const defScore = state.defResults.reduce((sum, r) => sum + r.score, 0);
+  const defMax = WORDS.length;
+  const defScoreRounded = Math.round(defScore * 10) / 10;
+  const total = spScore + defScore;
+  const maxTotal = WORDS.length * 2;
+  const pct = total / maxTotal;
+
+  document.getElementById('final-sp-score').textContent = spScore;
+  document.getElementById('final-def-score').textContent = defScoreRounded;
+  document.getElementById('final-sp-score').nextElementSibling.textContent = `/${WORDS.length}`;
+  document.getElementById('final-def-score').nextElementSibling.textContent = `/${defMax}`;
+
+  // Stars
+  let stars, emoji, message;
+  if (pct >= 0.9) {
+    stars = '⭐⭐⭐'; emoji = '🏆';
+    message = `<strong>Outstanding, Detective!</strong> You cracked the case wide open. Your spelling and vocabulary skills are at the very top of the class!`;
+  } else if (pct >= 0.7) {
+    stars = '⭐⭐'; emoji = '🔍';
+    message = `<strong>Great work, Detective!</strong> You solved most of the case. Keep practising those tricky words and you'll be a master detective!`;
+  } else if (pct >= 0.5) {
+    stars = '⭐'; emoji = '📋';
+    message = `<strong>Good effort, Detective!</strong> You're building your evidence file. Keep studying and you'll solve the whole case next time!`;
+  } else {
+    stars = '🔄'; emoji = '💪';
+    message = `<strong>Keep going, Detective!</strong> Every great detective had to train hard. Review the words and try again — you've got this!`;
+  }
+
+  document.getElementById('final-stars').textContent = stars;
+  document.getElementById('final-emoji').textContent = emoji;
+  document.getElementById('finish-message').innerHTML = message;
+
+  // Combined breakdown
+  const breakdown = document.getElementById('final-breakdown');
+  breakdown.innerHTML = '';
+  WORDS.forEach((w, i) => {
+    const sp = state.spellingResults[i] || { correct: false, userAnswer: '' };
+    const df = state.defResults[i] || { score: 0, feedback: '' };
+
+    let defIcon = df.score >= 1 ? '✅' : df.score > 0 ? '🟡' : '❌';
+    let cls = sp.correct && df.score >= 1 ? 'r-correct' : df.score > 0 || sp.correct ? 'r-partial' : 'r-wrong';
+
+    const div = document.createElement('div');
+    div.className = `result-item ${cls}`;
+    div.innerHTML = `
+      <span class="result-icon">${sp.correct ? '✅' : '❌'}</span>
+      <div style="flex:1">
+        <div class="result-word">${w.word}</div>
+        <div class="result-answer">${defIcon} Def · ${w.definition}</div>
+      </div>
+    `;
+    breakdown.appendChild(div);
+  });
+
+  showScreen('screen-final');
+}
+
+// ─────────────────────────────────────────────
+//  RESTART
+// ─────────────────────────────────────────────
+function restartApp() {
+  stopTimer();
+  speechSynthesis.cancel();
+  state.wordIndex = 0;
+  state.spellingResults = [];
+  state.defResults = [];
+  state.replaysUsed = 0;
+  state.wordLocked = false;
+  showScreen('screen-setup');
+}
+</script>
+</body>
+</html>
