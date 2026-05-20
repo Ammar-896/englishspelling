@@ -18,19 +18,31 @@ export default async function handler(req, res) {
     });
   }
 
-  const prompt = `You are grading a PRIMARY SCHOOL student's definition on a spelling test. The teacher is VERY lenient and kind.
+  const prompt = `You are grading a PRIMARY SCHOOL student's definition on a spelling test.
 
 Word: "${word}"
 Official definition: "${correctDef}"
 Student's answer: "${userAnswer}"
 
-Grading rules (BE GENEROUS):
-- Mark as CORRECT (score: 1) if they captured the main idea, even with different words, minor spelling mistakes, or casual phrasing
-- Mark as PARTIAL (score: 0.5) if they got part of the idea or were vaguely on the right track
-- Mark as INCORRECT (score: 0) ONLY if completely wrong or totally irrelevant
-- A simple but accurate answer is PERFECT — don't penalise brevity
-- Ignore capitalisation and punctuation
-- Accept synonyms and reasonable paraphrases freely
+GRADING RULES — read carefully:
+
+CORRECT (score: 1) — award this if the student clearly understood the meaning:
+  - They captured the main idea, even with casual or simple phrasing
+  - They used different words but the meaning is clearly right
+  - Minor spelling mistakes are fine
+  - Short but accurate answers are perfect
+
+PARTIAL (score: 0.5) — award this if:
+  - They got part of the idea but missed something important
+  - Their answer is vague but shows they have some understanding
+
+INCORRECT (score: 0) — award this if:
+  - The answer has NO connection to the actual meaning of the word
+  - It is a random word, a test input, gibberish, or completely off-topic
+  - The student clearly guessed with no understanding (e.g. answering "test", "idk", "hello", "123", or a single unrelated word)
+  - The answer is about a completely different concept
+
+IMPORTANT: Being "lenient" means accepting imperfect but genuine attempts — it does NOT mean accepting random words or nonsense. A single word that is not related to the definition must score 0.
 
 Respond with ONLY a raw JSON object (no markdown, no explanation, no backticks):
 {"correct":true/false,"partial":true/false,"feedback":"one short encouraging sentence (max 10 words)","score":0 or 0.5 or 1}`;
